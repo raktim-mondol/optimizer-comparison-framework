@@ -20,18 +20,15 @@ DL_Theory/
 ├── main.py                      # Main entry point for running all experiments
 ├── requirements.txt             # Python dependencies
 ├── README_EXPERIMENTS.md        # This file
-│
 ├── optimizers/                  # Optimizer implementations
 │   ├── amcas.py                 # AMCAS optimizer (user's proposed optimizer)
 │   ├── base.py                  # Base optimizer class
 │   └── utils.py                 # Utility functions
-│
 ├── models/                      # Model architectures
 │   ├── cnn_mnist.py            # CNN models for MNIST
 │   ├── cnn_cifar10.py          # CNN models for CIFAR10
 │   ├── vit_mnist.py            # ViT models for MNIST
 │   └── vit_cifar10.py          # ViT models for CIFAR10
-│
 ├── experiments/                 # Experiment management
 │   ├── experiment_runner.py    # Runs experiments and collects metrics
 │   ├── metrics_collector.py    # Comprehensive metrics collection
@@ -41,13 +38,11 @@ DL_Theory/
 │       ├── mnist_vit.yaml      # MNIST ViT experiments
 │       ├── cifar10_cnn.yaml    # CIFAR10 CNN experiments
 │       └── cifar10_vit.yaml    # CIFAR10 ViT experiments
-│
 ├── benchmarks/                  # Benchmarking tools
 │   ├── comprehensive_benchmark.py  # Main benchmark runner
 │   ├── memory_profiler.py      # Memory usage profiling
 │   ├── speed_benchmark.py     # Training/inference speed benchmarking
 │   └── optimizer_comparison.py # Optimizer comparison on synthetic functions
-│
 └── scripts/
     └── run_all_experiments.py # Alternative script for running experiments
 ```
