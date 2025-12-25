@@ -36,8 +36,7 @@ optimizers:
     
   - name: "SGD+Momentum"
     class: "SGD+Momentum"
-    params:
-      momentum: 0.9
+    params: {}  # momentum is handled in the lambda function
       
   - name: "RMSprop"
     class: "RMSprop"

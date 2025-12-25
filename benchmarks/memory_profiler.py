@@ -59,7 +59,7 @@ class MemoryProfiler:
             'Adam': {'betas': (0.9, 0.999)},
             'AdamW': {'betas': (0.9, 0.999), 'weight_decay': 0.01},
             'SGD': {},
-            'SGD+Momentum': {'momentum': 0.9},
+            'SGD+Momentum': {},  # momentum is already set in the lambda function
             'RMSprop': {},
             'Adagrad': {},
             'Adadelta': {},

@@ -15,16 +15,28 @@ import sys
 import os
 from pathlib import Path
 
-def run_experiment(command):
-    """Run a command and print output."""
+def run_experiment(command, experiment_name=""):
+    """Run a command and print output with real-time progress."""
     print(f"\n{'='*80}")
-    print(f"Running: {command}")
+    print(f"Running: {experiment_name}")
+    print(f"Command: {command}")
     print('='*80)
+    
+    # Run with real-time output to show progress
     result = subprocess.run(command, shell=True, capture_output=True, text=True)
+    
     if result.returncode != 0:
-        print(f"Error running command: {command}")
+        print(f"❌ Error running experiment: {experiment_name}")
         print(f"STDOUT:\n{result.stdout}")
         print(f"STDERR:\n{result.stderr}")
+    else:
+        print(f"✅ Successfully completed: {experiment_name}")
+        # Show summary from output
+        if "Best test accuracy:" in result.stdout:
+            for line in result.stdout.split('\n'):
+                if "Best test accuracy:" in line or "Total training time:" in line:
+                    print(f"  {line.strip()}")
+    
     return result.returncode
 
 def main():
@@ -64,7 +76,7 @@ def main():
             "datasets": ["mnist"],
             "architectures": ["cnn"],
             "optimizers": optimizers,
-            "epochs": 10,
+            "epochs": 100,
             "batch_size": 64,
             "learning_rate": 0.001,
             "data_augmentation": False,
@@ -78,7 +90,7 @@ def main():
             "datasets": ["mnist"],
             "architectures": ["vit"],
             "optimizers": optimizers,
-            "epochs": 10,
+            "epochs": 100,
             "batch_size": 64,
             "learning_rate": 0.001,
             "data_augmentation": False,
@@ -92,7 +104,7 @@ def main():
             "datasets": ["cifar10"],
             "architectures": ["cnn"],
             "optimizers": optimizers,
-            "epochs": 20,
+            "epochs": 100,
             "batch_size": 64,
             "learning_rate": 0.001,
             "data_augmentation": True,
@@ -106,7 +118,7 @@ def main():
             "datasets": ["cifar10"],
             "architectures": ["vit"],
             "optimizers": optimizers,
-            "epochs": 20,
+            "epochs": 100,
             "batch_size": 64,
             "learning_rate": 0.001,
             "data_augmentation": True,
@@ -120,9 +132,24 @@ def main():
     # Run each configuration
     all_results = []
     
+    # Calculate total estimated time
+    total_experiments = 0
+    total_estimated_seconds = 0
+    for config in configs:
+        num_exps = len(config['optimizers']) * len(config['datasets']) * len(config['architectures']) * 3
+        total_experiments += num_exps
+        total_estimated_seconds += num_exps * config['epochs'] * 2
+    
+    print(f"\n[OVERVIEW]:")
+    print(f"   Total experiment sets: {len(configs)}")
+    print(f"   Total individual experiments: ~{total_experiments}")
+    print(f"   Total estimated time: ~{total_estimated_seconds/60:.1f} minutes")
+    print(f"   Output directory: {output_dir}")
+    
     for i, config in enumerate(configs):
         print(f"\n\n{'='*80}")
-        print(f"EXPERIMENT SET {i+1}/{len(configs)}: {config['name']}")
+        print(f"[EXPERIMENT SET {i+1}/{len(configs)}]: {config['name']}")
+        print(f"Progress: {i+1}/{len(configs)} ({((i+1)/len(configs)*100):.1f}%)")
         print('='*80)
         
         # Build command
@@ -150,18 +177,32 @@ def main():
         
         cmd = " ".join(cmd_parts)
         
+        # Calculate estimated time and provide progress info
+        num_experiments = len(config['optimizers']) * len(config['datasets']) * len(config['architectures']) * 3  # 3 models per combo
+        estimated_time_per_exp = config['epochs'] * 2  # Rough estimate: 2 seconds per epoch
+        total_estimated_time = num_experiments * estimated_time_per_exp
+        
+        print(f"\n[EXPERIMENT DETAILS]:")
+        print(f"   - Optimizers: {len(config['optimizers'])}")
+        print(f"   - Datasets: {', '.join(config['datasets'])}")
+        print(f"   - Architectures: {', '.join(config['architectures'])}")
+        print(f"   - Total experiments: ~{num_experiments}")
+        print(f"   - Epochs per experiment: {config['epochs']}")
+        print(f"   - Estimated time: ~{total_estimated_time} seconds (~{total_estimated_time/60:.1f} minutes)")
+        
         # Run experiment
-        return_code = run_experiment(cmd)
+        print(f"\n[STARTING] Experiment set...")
+        return_code = run_experiment(cmd, config['name'])
         
         if return_code == 0:
-            print(f"\n✓ Experiment set '{config['name']}' completed successfully!")
+            print(f"\n[SUCCESS] Experiment set '{config['name']}' completed successfully!")
             all_results.append({
                 "name": config['name'],
                 "output_dir": f"{output_dir}/{config['name']}",
                 "status": "SUCCESS"
             })
         else:
-            print(f"\n✗ Experiment set '{config['name']}' failed!")
+            print(f"\n[FAILED] Experiment set '{config['name']}' failed!")
             all_results.append({
                 "name": config['name'],
                 "output_dir": f"{output_dir}/{config['name']}",

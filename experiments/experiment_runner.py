@@ -77,7 +77,7 @@ class ExperimentRunner:
             'Adam': {'betas': (0.9, 0.999)},
             'AdamW': {'betas': (0.9, 0.999), 'weight_decay': 0.01},
             'SGD': {},
-            'SGD+Momentum': {'momentum': 0.9},
+            'SGD+Momentum': {},  # momentum is already set in the lambda function
             'RMSprop': {},
             'Adagrad': {},
             'Adadelta': {},
@@ -266,6 +266,7 @@ class ExperimentRunner:
         total = 0
         
         batch_metrics = []
+        total_batches = len(train_loader)
         
         for batch_idx, (data, target) in enumerate(train_loader):
             data, target = data.to(device), target.to(device)
@@ -280,6 +281,14 @@ class ExperimentRunner:
             _, predicted = output.max(1)
             total += target.size(0)
             correct += predicted.eq(target).sum().item()
+            
+            # Show batch progress every 10 batches or on last batch
+            if (batch_idx + 1) % 10 == 0 or (batch_idx + 1) == total_batches:
+                batch_acc = 100. * predicted.eq(target).sum().item() / target.size(0)
+                batch_loss = loss.item()
+                progress_pct = ((batch_idx + 1) / total_batches) * 100
+                print(f"  Batch {batch_idx+1}/{total_batches} ({progress_pct:.1f}%): "
+                      f"Loss={batch_loss:.4f}, Acc={batch_acc:.1f}%")
             
             # Collect batch metrics
             batch_metrics.append({
@@ -450,7 +459,7 @@ class ExperimentRunner:
         
         # Training loop
         for epoch in range(1, num_epochs + 1):
-            print(f"\nEpoch {epoch}/{num_epochs}")
+            print(f"\n[Epoch {epoch}/{num_epochs}]")
             print("-" * 40)
             
             # Start epoch timer
@@ -458,10 +467,12 @@ class ExperimentRunner:
             metrics_collector.start_timer('epoch_training')
             
             # Train for one epoch
+            print(f"Training...")
             train_metrics = self.train_epoch(model, self.device, train_loader, 
                                            optimizer, criterion, epoch, metrics_collector)
             
             # Evaluate on test set
+            print(f"Evaluating...")
             test_metrics = self.evaluate(model, self.device, test_loader, criterion)
             
             # Update learning rate scheduler
@@ -494,27 +505,25 @@ class ExperimentRunner:
                 best_accuracy = current_accuracy
                 best_model_state = model.state_dict().copy()
                 epochs_without_improvement = 0
-                print(f"✓ New best accuracy: {best_accuracy:.2f}%")
+                improvement_symbol = ">>"
             else:
                 epochs_without_improvement += 1
-                print(f"✗ No improvement for {epochs_without_improvement} epoch(s)")
+                improvement_symbol = ".."
             
-            # Print progress
-            print(f"Train Loss: {train_metrics['train_loss']:.4f}, "
-                  f"Train Acc: {train_metrics['train_accuracy']:.2f}%")
-            print(f"Test Loss: {test_metrics['test_loss']:.4f}, "
-                  f"Test Acc: {test_metrics['test_accuracy']:.2f}%, "
-                  f"Test F1: {test_metrics['test_f1']:.4f}")
-            print(f"Time: {epoch_time:.2f}s, "
-                  f"LR: {optimizer.param_groups[0]['lr']:.6f}")
+            # Print progress summary
+            print(f"\n[Epoch {epoch} Summary]:")
+            print(f"  [{improvement_symbol}] Best: {best_accuracy:.2f}% | Current: {current_accuracy:.2f}% | No improvement: {epochs_without_improvement}")
+            print(f"  [TRAIN] Loss={train_metrics['train_loss']:.4f}, Acc={train_metrics['train_accuracy']:.2f}%")
+            print(f"  [TEST]  Loss={test_metrics['test_loss']:.4f}, Acc={test_metrics['test_accuracy']:.2f}%, F1={test_metrics['test_f1']:.4f}")
+            print(f"  [TIME]  {epoch_time:.2f}s | LR: {optimizer.param_groups[0]['lr']:.6f}")
             if self.device.type == 'cuda':
-                print(f"GPU Memory: {memory_allocated:.2f} GB")
+                print(f"  [GPU]   Memory: {memory_allocated:.2f} GB")
             
             # Early stopping check
             if epochs_without_improvement >= patience:
-                print(f"\n⚠️ Early stopping triggered after {epoch} epochs!")
-                print(f"No improvement for {epochs_without_improvement} consecutive epochs.")
-                print(f"Best accuracy achieved: {best_accuracy:.2f}%")
+                print(f"\n[EARLY STOPPING] Triggered after {epoch} epochs!")
+                print(f"   No improvement for {epochs_without_improvement} consecutive epochs (patience={patience})")
+                print(f"   [BEST] Accuracy achieved: {best_accuracy:.2f}%")
                 break
         
         # Stop total training timer
@@ -541,10 +550,16 @@ class ExperimentRunner:
             'config': config,
         }, checkpoint_path)
         
-        print(f"\nExperiment completed!")
-        print(f"Best test accuracy: {best_accuracy:.2f}%")
-        print(f"Total training time: {final_metrics.get('total_training_total', 0):.2f}s")
-        print(f"Model saved to: {checkpoint_path}")
+        print(f"\n{'='*60}")
+        print(f"[COMPLETED] Experiment Finished Successfully!")
+        print(f"{'='*60}")
+        print(f"[RESULTS] Best Test Accuracy: {best_accuracy:.2f}%")
+        print(f"[TIME] Total Training Time: {final_metrics.get('total_training_total', 0):.2f}s")
+        print(f"[CHECKPOINT] Model saved to: {checkpoint_path}")
+        print(f"[EPOCHS] Trained: {len(history['train_loss'])}/{num_epochs}")
+        if len(history['train_loss']) < num_epochs:
+            print(f"   (Early stopping saved {num_epochs - len(history['train_loss'])} epochs)")
+        print(f"{'='*60}")
         
         return history
     

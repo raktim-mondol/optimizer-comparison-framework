@@ -169,7 +169,7 @@ def create_experiment_configs(args):
                                 'weight_decay': 0.01
                             }
                         elif optimizer_name == 'SGD+Momentum':
-                            config['optimizer_params'] = {'momentum': 0.9}
+                            config['optimizer_params'] = {}  # momentum is handled in the lambda function
                         elif optimizer_name in ['Adam', 'NAdam', 'RAdam']:
                             config['optimizer_params'] = {'betas': (0.9, 0.999)}
                         
@@ -184,12 +184,21 @@ def run_experiments(args, configs, device):
     print("Running Main Experiments")
     print("="*80)
     
+    # Calculate total estimated time
+    total_estimated_seconds = len(configs) * args.epochs * 2  # Rough estimate
+    print(f"\n[INFO] Experiment Overview:")
+    print(f"   Total experiments: {len(configs)}")
+    print(f"   Epochs per experiment: {args.epochs}")
+    print(f"   Estimated total time: ~{total_estimated_seconds} seconds (~{total_estimated_seconds/60:.1f} minutes)")
+    
     all_results = {}
     
     for i, config in enumerate(configs):
         experiment_name = config['experiment_name']
-        print(f"\nExperiment {i+1}/{len(configs)}: {experiment_name}")
-        print("-" * 40)
+        print(f"\n{'='*60}")
+        print(f"[EXPERIMENT {i+1}/{len(configs)}]: {experiment_name}")
+        print(f"Progress: {i+1}/{len(configs)} ({((i+1)/len(configs)*100):.1f}%)")
+        print(f"{'='*60}")
         
         try:
             # Create experiment runner
@@ -211,13 +220,25 @@ def run_experiments(args, configs, device):
                     'result': result
                 }, f, indent=2, default=str)
             
-            print(f"Result saved to: {result_path}")
+            print(f"[SAVED] Result saved to: {result_path}")
+            print(f"[SUCCESS] Experiment {i+1}/{len(configs)} completed successfully!")
             
         except Exception as e:
-            print(f"Error running experiment {experiment_name}: {e}")
+            print(f"[ERROR] Experiment {experiment_name}: {e}")
             import traceback
             traceback.print_exc()
             all_results[experiment_name] = {'error': str(e)}
+    
+    print(f"\n{'='*80}")
+    print(f"[COMPLETED] All Experiments Finished!")
+    print(f"{'='*80}")
+    print(f"[SUMMARY] Total experiments run: {len(all_results)}")
+    successful = sum(1 for r in all_results.values() if 'error' not in r)
+    failed = len(all_results) - successful
+    print(f"[SUCCESS] Successful: {successful}")
+    if failed > 0:
+        print(f"[FAILED] Failed: {failed}")
+    print(f"[OUTPUT] Results saved to: {args.output}")
     
     return all_results
 
