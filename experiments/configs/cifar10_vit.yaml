@@ -1,0 +1,77 @@
+# CIFAR10 Vision Transformer Experiment Configuration
+# Compares different optimizers on CIFAR10 dataset with Vision Transformer architecture
+
+experiment_name: "cifar10_vit_comparison"
+dataset: "cifar10"
+model: "vit_small"
+epochs: 30
+batch_size: 64
+learning_rate: 0.0005
+data_augmentation: true
+use_scheduler: true
+seed: 42
+
+optimizers:
+  - name: "AMCAS"
+    class: "AMCAS"
+    params:
+      betas: [0.9, 0.999]
+      gamma: 0.05
+      lambda_consistency: 0.005
+      
+  - name: "Adam"
+    class: "Adam"
+    params:
+      betas: [0.9, 0.999]
+      
+  - name: "AdamW"
+    class: "AdamW"
+    params:
+      betas: [0.9, 0.999]
+      weight_decay: 0.01
+      
+  - name: "SGD"
+    class: "SGD"
+    params:
+      momentum: 0.9
+      weight_decay: 0.0001
+      
+  - name: "RMSprop"
+    class: "RMSprop"
+    params:
+      weight_decay: 0.0001
+    
+  - name: "NAdam"
+    class: "NAdam"
+    params:
+      betas: [0.9, 0.999]
+      
+  - name: "RAdam"
+    class: "RAdam"
+    params:
+      betas: [0.9, 0.999]
+
+metrics:
+  classification:
+    - accuracy
+    - precision
+    - recall
+    - f1
+    - auc_roc
+    
+  computational:
+    - training_time
+    - inference_time
+    - memory_usage
+    - flops
+    
+  optimizer_specific:
+    - gradient_consistency
+    - curvature_stats
+    - trust_ratio
+
+output:
+  excel_file: "results/cifar10_vit_comparison.xlsx"
+  plots_dir: "results/plots/cifar10_vit"
+  json_file: "results/raw/cifar10_vit.json"
+  report_file: "results/reports/cifar10_vit_report.md"
