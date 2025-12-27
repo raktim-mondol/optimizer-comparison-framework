@@ -393,7 +393,7 @@ class SyntheticBenchmark:
                 else:
                     serializable_results[name][key] = value
         
-        with open(self.output_dir / f'{filename}.json', 'w') as f:
+        with open(self.output_dir / f'{filename}.json', 'w', encoding='utf-8') as f:
             json.dump(serializable_results, f, indent=2)
     
     def run_all_benchmarks(self):
@@ -449,7 +449,7 @@ class SyntheticBenchmark:
             }
         
         # Save summary
-        with open(self.output_dir / 'summary.json', 'w') as f:
+        with open(self.output_dir / 'summary.json', 'w', encoding='utf-8') as f:
             json.dump(summary, f, indent=2)
         
         print("\n" + "=" * 60)

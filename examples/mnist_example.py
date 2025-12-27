@@ -299,10 +299,10 @@ def plot_results(results, output_dir='mnist_results'):
               f"{data['generalization_gap']:>11.2f}%")
     
     # Save results
-    with open(output_path / 'mnist_results.json', 'w') as f:
+    with open(output_path / 'mnist_results.json', 'w', encoding='utf-8') as f:
         json.dump(results, f, indent=2)
     
-    with open(output_path / 'mnist_summary.json', 'w') as f:
+    with open(output_path / 'mnist_summary.json', 'w', encoding='utf-8') as f:
         json.dump(summary_data, f, indent=2)
     
     print(f"\nResults saved to: {output_path}/")

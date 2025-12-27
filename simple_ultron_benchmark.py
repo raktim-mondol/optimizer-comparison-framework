@@ -157,7 +157,7 @@ all_results = {
     'speed': speed_results,
 }
 
-with open(output_dir / 'results.json', 'w') as f:
+with open(output_dir / 'results.json', 'w', encoding='utf-8') as f:
     # Convert to serializable format
     serializable = {}
     for test_name, test_results in all_results.items():
@@ -233,7 +233,7 @@ ULTRON shows competitive performance with the following advantages:
 While ULTRON may not always achieve the absolute lowest loss, it provides an excellent balance of performance, memory usage, and computational efficiency.
 """
 
-with open(output_dir / 'report.md', 'w') as f:
+with open(output_dir / 'report.md', 'w', encoding='utf-8') as f:
     f.write(report)
 
 print(f"Report generated: {output_dir}/report.md")

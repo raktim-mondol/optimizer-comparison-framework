@@ -325,7 +325,7 @@ class OptimizerComparison:
                     'iterations_to_convergence': history['iterations_to_convergence'],
                 }
         
-        with open(result_file, 'w') as f:
+        with open(result_file, 'w', encoding='utf-8') as f:
             json.dump(serializable_results, f, indent=2)
         
         print(f"  Results saved to: {result_file}")
@@ -334,7 +334,7 @@ class OptimizerComparison:
         """Generate comparison report for all functions."""
         report_path = self.output_dir / 'optimizer_comparison_report.md'
         
-        with open(report_path, 'w') as f:
+        with open(report_path, 'w', encoding='utf-8') as f:
             f.write("# Optimizer Comparison Report\n\n")
             f.write(f"Generated on: {time.strftime('%Y-%m-%d %H:%M:%S')}\n\n")
             f.write(f"Iterations per function: {num_iterations}\n\n")

@@ -336,7 +336,7 @@ class SpeedBenchmark:
         # Convert numpy arrays to lists for JSON serialization
         serializable_result = self._make_serializable(result)
         
-        with open(result_file, 'w') as f:
+        with open(result_file, 'w', encoding='utf-8') as f:
             json.dump(serializable_result, f, indent=2, default=str)
         
         print(f"  Results saved to: {result_file}")
@@ -345,7 +345,7 @@ class SpeedBenchmark:
         """Generate speed comparison report."""
         report_path = self.output_dir / 'speed_comparison_report.md'
         
-        with open(report_path, 'w') as f:
+        with open(report_path, 'w', encoding='utf-8') as f:
             f.write("# Speed Benchmarking Report\n\n")
             f.write(f"Generated on: {time.strftime('%Y-%m-%d %H:%M:%S')}\n\n")
             f.write(f"Batch Size: {batch_size}\n")

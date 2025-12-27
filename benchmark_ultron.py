@@ -509,7 +509,7 @@ class ULTRONBenchmark:
                     }
         
         result_file = self.output_dir / 'benchmark_results.json'
-        with open(result_file, 'w') as f:
+        with open(result_file, 'w', encoding='utf-8') as f:
             json.dump(serializable_results, f, indent=2)
         
         print(f"\nResults saved to: {result_file}")
@@ -518,7 +518,7 @@ class ULTRONBenchmark:
         """Generate benchmark report."""
         report_file = self.output_dir / 'benchmark_report.md'
         
-        with open(report_file, 'w') as f:
+        with open(report_file, 'w', encoding='utf-8') as f:
             f.write("# ULTRON Optimizer Benchmark Report\n\n")
             f.write(f"Generated on: {time.strftime('%Y-%m-%d %H:%M:%S')}\n\n")
             

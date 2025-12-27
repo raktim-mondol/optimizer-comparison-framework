@@ -119,7 +119,7 @@ class ExperimentRunner:
         config_dir.mkdir(exist_ok=True)
         
         config_path = config_dir / f'{experiment_name}_config.yaml'
-        with open(config_path, 'w') as f:
+        with open(config_path, 'w', encoding='utf-8') as f:
             yaml.dump(config, f, default_flow_style=False)
     
     def get_dataset(self, dataset_name: str, batch_size: int = 64, 
@@ -642,7 +642,7 @@ class ExperimentRunner:
         """
         report_path = self.output_dir / output_file
         
-        with open(report_path, 'w') as f:
+        with open(report_path, 'w', encoding='utf-8') as f:
             f.write("# Optimizer Comparison Report\n\n")
             f.write(f"Generated on: {time.strftime('%Y-%m-%d %H:%M:%S')}\n\n")
             

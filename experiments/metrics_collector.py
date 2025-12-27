@@ -291,7 +291,7 @@ class MetricsCollector:
             else:
                 serializable_metrics[key] = value
         
-        with open(filepath, 'w') as f:
+        with open(filepath, 'w', encoding='utf-8') as f:
             json.dump(serializable_metrics, f, indent=2, default=str)
     
     def load_from_file(self, filepath: str):
@@ -303,7 +303,7 @@ class MetricsCollector:
         """
         import json
         
-        with open(filepath, 'r') as f:
+        with open(filepath, 'r', encoding='utf-8') as f:
             loaded_metrics = json.load(f)
         
         self.metrics.update(loaded_metrics)

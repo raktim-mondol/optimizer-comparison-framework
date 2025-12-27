@@ -204,7 +204,7 @@ class ComprehensiveBenchmark:
         """
         report_path = self.output_dir / 'comprehensive_report.md'
         
-        with open(report_path, 'w') as f:
+        with open(report_path, 'w', encoding='utf-8') as f:
             f.write("# Comprehensive Benchmark Report\n\n")
             f.write(f"Generated on: {time.strftime('%Y-%m-%d %H:%M:%S')}\n\n")
             
@@ -466,7 +466,7 @@ class ComprehensiveBenchmark:
         # Save all results
         print("\n5. Saving all benchmark results...")
         results_file = self.output_dir / 'full_benchmark_results.json'
-        with open(results_file, 'w') as f:
+        with open(results_file, 'w', encoding='utf-8') as f:
             # Convert to serializable format
             serializable_results = {}
             for key, value in all_results.items():

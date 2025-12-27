@@ -215,7 +215,7 @@ def main():
     print("="*80)
     
     summary_file = Path(output_dir) / "paper_experiments_summary.md"
-    with open(summary_file, 'w') as f:
+    with open(summary_file, 'w', encoding='utf-8') as f:
         f.write("# Optimizer Comparison Paper Experiments - Summary\n\n")
         f.write("## Overview\n\n")
         f.write("This document summarizes the results of comprehensive optimizer comparison experiments\n")

@@ -362,7 +362,7 @@ class ResultsExporter:
         for exp_name, result in results.items():
             serializable_results[exp_name] = self._make_serializable(result)
         
-        with open(json_path, 'w') as f:
+        with open(json_path, 'w', encoding='utf-8') as f:
             json.dump(serializable_results, f, indent=2, default=str)
         
         print(f"Results exported to JSON: {json_path}")
@@ -591,6 +591,7 @@ class ResultsExporter:
         """Plot gradient statistics."""
         fig, axes = plt.subplots(1, 2, figsize=(15, 6))
         
+        has_gradient_norms = False
         for exp_name, result in results.items():
             if 'error' in result:
                 continue
@@ -599,15 +600,18 @@ class ResultsExporter:
             if gradient_norms:
                 epochs = list(range(1, len(gradient_norms) + 1))
                 axes[0].plot(epochs, gradient_norms, label=exp_name, marker='o', markersize=3, linewidth=1)
+                has_gradient_norms = True
         
         axes[0].set_xlabel('Batch')
         axes[0].set_ylabel('Gradient Norm')
         axes[0].set_title('Gradient Norm Over Training')
-        axes[0].legend(fontsize=8)
+        if has_gradient_norms:
+            axes[0].legend(fontsize=8)
         axes[0].grid(True, alpha=0.3)
         axes[0].set_yscale('log')
         
         # Plot gradient mean/std if available
+        has_gradient_means = False
         for exp_name, result in results.items():
             if 'error' in result:
                 continue
@@ -616,11 +620,13 @@ class ResultsExporter:
             if gradient_means:
                 epochs = list(range(1, len(gradient_means) + 1))
                 axes[1].plot(epochs, gradient_means, label=f'{exp_name} (mean)', marker='o', markersize=3, linewidth=1)
+                has_gradient_means = True
         
         axes[1].set_xlabel('Batch')
         axes[1].set_ylabel('Gradient Mean')
         axes[1].set_title('Gradient Mean Over Training')
-        axes[1].legend(fontsize=8)
+        if has_gradient_means:
+            axes[1].legend(fontsize=8)
         axes[1].grid(True, alpha=0.3)
         
         plt.tight_layout()
@@ -637,7 +643,7 @@ class ResultsExporter:
         """
         report_path = self.output_dir / report_file
         
-        with open(report_path, 'w') as f:
+        with open(report_path, 'w', encoding='utf-8') as f:
             f.write("# Experiment Report\n\n")
             f.write(f"Generated on: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n\n")
             

@@ -213,7 +213,7 @@ def run_experiments(args, configs, device):
             result_dir.mkdir(exist_ok=True, parents=True)
             result_path = result_dir / f'{experiment_name}_result.json'
             
-            with open(result_path, 'w') as f:
+            with open(result_path, 'w', encoding='utf-8') as f:
                 json.dump({
                     'experiment_name': experiment_name,
                     'config': config,
@@ -331,7 +331,7 @@ def generate_reports(args, experiment_results, benchmark_results):
     # Generate summary
     print("\n5. Generating summary...")
     summary_file = Path(args.output) / 'summary.txt'
-    with open(summary_file, 'w') as f:
+    with open(summary_file, 'w', encoding='utf-8') as f:
         f.write("="*80 + "\n")
         f.write("Optimizer Comparison Framework - Summary\n")
         f.write("="*80 + "\n\n")
@@ -483,7 +483,7 @@ def main():
     
     # Save all results
     results_file = output_dir / 'all_results.json'
-    with open(results_file, 'w') as f:
+    with open(results_file, 'w', encoding='utf-8') as f:
         # Convert to serializable format
         def make_serializable(obj):
             if isinstance(obj, dict):

@@ -364,7 +364,7 @@ def plot_results(results, output_dir='cifar10_results'):
                     serializable_results[name][key] = value
         json.dump(serializable_results, f, indent=2)
     
-    with open(output_path / 'cifar10_summary.json', 'w') as f:
+    with open(output_path / 'cifar10_summary.json', 'w', encoding='utf-8') as f:
         json.dump(summary_data, f, indent=2)
     
     print(f"\nResults saved to: {output_path}/")

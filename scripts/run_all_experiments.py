@@ -168,7 +168,7 @@ Examples:
     # Save all results
     import json
     results_file = output_dir / 'all_results.json'
-    with open(results_file, 'w') as f:
+    with open(results_file, 'w', encoding='utf-8') as f:
         # Convert to serializable format
         def make_serializable(obj):
             if isinstance(obj, dict):
@@ -189,7 +189,7 @@ Examples:
     
     # Generate summary
     summary_file = output_dir / 'summary.txt'
-    with open(summary_file, 'w') as f:
+    with open(summary_file, 'w', encoding='utf-8') as f:
         f.write("="*80 + "\n")
         f.write("Optimizer Comparison Framework - Summary\n")
         f.write("="*80 + "\n\n")
