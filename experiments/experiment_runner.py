@@ -23,6 +23,7 @@ import sys
 # Import optimizers
 sys.path.append('..')
 from optimizers.amcas import AMCAS
+from optimizers.ultron import ULTRON
 
 # Import models
 from models.cnn_mnist import get_mnist_model
@@ -60,6 +61,7 @@ class ExperimentRunner:
         # Available optimizers
         self.optimizer_registry = {
             'AMCAS': AMCAS,
+            'ULTRON': ULTRON,
             'Adam': optim.Adam,
             'AdamW': optim.AdamW,
             'SGD': optim.SGD,
@@ -74,6 +76,7 @@ class ExperimentRunner:
         # Default optimizer parameters
         self.default_optimizer_params = {
             'AMCAS': {'betas': (0.9, 0.999), 'gamma': 0.1, 'lambda_consistency': 0.01},
+            'ULTRON': {'betas': (0.9, 0.999), 'clip_threshold': 1.0, 'normalize_gradients': True},
             'Adam': {'betas': (0.9, 0.999)},
             'AdamW': {'betas': (0.9, 0.999), 'weight_decay': 0.01},
             'SGD': {},

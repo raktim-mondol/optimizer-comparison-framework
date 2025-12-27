@@ -27,6 +27,7 @@ from models.cnn_cifar10 import get_cifar10_model
 from models.vit_mnist import VisionTransformerMNISTSmall, VisionTransformerMNISTMedium, VisionTransformerMNISTLarge
 from models.vit_cifar10 import VisionTransformerCIFAR10Small, VisionTransformerCIFAR10Medium, VisionTransformerCIFAR10Large
 from optimizers.amcas import AMCAS
+from optimizers.ultron import ULTRON
 
 
 class ComprehensiveBenchmark:
