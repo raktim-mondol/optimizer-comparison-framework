@@ -16,6 +16,7 @@ import sys
 sys.path.append('..')
 from optimizers.amcas import AMCAS
 from optimizers.ultron import ULTRON
+from optimizers.ultron_v2 import ULTRON_V2
 
 
 class OptimizerComparison:
@@ -37,6 +38,7 @@ class OptimizerComparison:
         self.optimizer_registry = {
             'AMCAS': AMCAS,
             'ULTRON': ULTRON,
+            'ULTRON_V2': ULTRON_V2,
             'Adam': torch.optim.Adam,
             'AdamW': torch.optim.AdamW,
             'SGD': torch.optim.SGD,
@@ -52,6 +54,17 @@ class OptimizerComparison:
         self.default_optimizer_params = {
             'AMCAS': {'betas': (0.9, 0.999), 'gamma': 0.1, 'lambda_consistency': 0.01},
             'ULTRON': {'betas': (0.9, 0.999), 'clip_threshold': 1.0, 'normalize_gradients': True},
+            'ULTRON_V2': {
+                'betas': (0.9, 0.999),
+                'clip_threshold': 1.0,
+                'normalize_gradients': True,
+                'normalization_strategy': 'rms',
+                'adaptive_clipping': True,
+                'clip_alpha': 0.99,
+                'clip_percentile': 95.0,
+                'state_precision': 'fp32',
+                'momentum_correction': True,
+            },
             'Adam': {'betas': (0.9, 0.999)},
             'AdamW': {'betas': (0.9, 0.999), 'weight_decay': 0.01},
             'SGD': {},

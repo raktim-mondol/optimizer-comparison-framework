@@ -28,6 +28,7 @@ from models.vit_mnist import VisionTransformerMNISTSmall, VisionTransformerMNIST
 from models.vit_cifar10 import VisionTransformerCIFAR10Small, VisionTransformerCIFAR10Medium, VisionTransformerCIFAR10Large
 from optimizers.amcas import AMCAS
 from optimizers.ultron import ULTRON
+from optimizers.ultron_v2 import ULTRON_V2
 
 
 class ComprehensiveBenchmark:
