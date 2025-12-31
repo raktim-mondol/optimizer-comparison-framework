@@ -402,6 +402,7 @@ class NEXUS(BaseOptimizer):
             # Update multi-scale momentum buffers
             momentums = state['momentums']
             for j, (momentum, beta) in enumerate(zip(momentums, betas)):
+                # Standard momentum update: m_t = beta * m_{t-1} + (1-beta) * g_t
                 momentum.mul_(beta).add_(grad * (1 - beta))
             
             # Update second moment (for adaptive learning rates)
@@ -458,8 +459,11 @@ class NEXUS(BaseOptimizer):
             momentum_magnitude = torch.abs(momentums[0])
             
             # Learning rate adjustment based on gradient consistency
-            lr_adjustment = direction_consistency * (momentum_magnitude / (grad_magnitude + eps))
-            adaptive_lr.mul_(1 - meta_lr).add_(lr_adjustment)
+            # Use a small adjustment factor to prevent explosion
+            # Clamp direction consistency to [0, 1] range
+            dir_consistency_clamped = torch.clamp(direction_consistency, 0.0, 1.0)
+            lr_adjustment = dir_consistency_clamped * (momentum_magnitude / (grad_magnitude + eps))
+            adaptive_lr.mul_(1 - meta_lr).add_(lr_adjustment * meta_lr)
             
             # Combine multi-scale momentum with adaptive weights
             # Use exponential weighting for different scales
@@ -484,8 +488,10 @@ class NEXUS(BaseOptimizer):
             # Apply layer-wise adaptation
             scaled_momentum.mul_(layer_factor)
             
-            # Apply adaptive learning rate
-            scaled_momentum.mul_(adaptive_lr)
+            # Apply adaptive learning rate with clipping
+            # Clip adaptive learning rate to prevent explosion
+            adaptive_lr_clipped = torch.clamp(adaptive_lr, min=0.1, max=10.0)
+            scaled_momentum.mul_(adaptive_lr_clipped)
             
             # Bias correction
             bias_correction = 1 - betas[-1] ** step
