@@ -31,15 +31,15 @@ class GPUTester:
             self.gpu_name = torch.cuda.get_device_name(0)
             self.gpu_memory = torch.cuda.get_device_properties(0).total_memory / 1024**3  # GB
             
-            print(f"✅ CUDA is available!")
-            print(f"📱 GPU Device: {self.gpu_name}")
-            print(f"💾 Total GPU Memory: {self.gpu_memory:.2f} GB")
-            print(f"🔢 CUDA Version: {torch.version.cuda}")
-            print(f"🐍 PyTorch Version: {torch.__version__}")
-            print(f"🔢 Number of GPUs: {torch.cuda.device_count()}")
+            print(f"[PASS] CUDA is available!")
+            print(f"[INFO] GPU Device: {self.gpu_name}")
+            print(f"[INFO] Total GPU Memory: {self.gpu_memory:.2f} GB")
+            print(f"[INFO] CUDA Version: {torch.version.cuda}")
+            print(f"[INFO] PyTorch Version: {torch.__version__}")
+            print(f"[INFO] Number of GPUs: {torch.cuda.device_count()}")
             return True
         else:
-            print("❌ CUDA is not available. Will run on CPU.")
+            print("[FAIL] CUDA is not available. Will run on CPU.")
             self.device = torch.device('cpu')
             return False
     
@@ -55,7 +55,7 @@ class GPUTester:
         """Print current memory usage."""
         allocated, reserved = self.get_gpu_memory_usage()
         if torch.cuda.is_available():
-            print(f"🔍 {operation_name} - GPU Memory: {allocated:.2f}GB allocated, {reserved:.2f}GB reserved")
+            print(f"[INFO] {operation_name} - GPU Memory: {allocated:.2f}GB allocated, {reserved:.2f}GB reserved")
     
     def test_basic_operations(self):
         """Test basic GPU operations."""
@@ -138,7 +138,7 @@ class GPUTester:
         batch_size = 512
         num_batches = 100
         
-        print(f"🏋️ Training for {num_batches} batches with batch size {batch_size}")
+        print(f"[INFO] Training for {num_batches} batches with batch size {batch_size}")
         
         total_start_time = time.time()
         
@@ -157,13 +157,13 @@ class GPUTester:
             optimizer.step()
             
             if batch_idx % 20 == 0:
-                print(f"📊 Batch {batch_idx}/{num_batches}, Loss: {loss.item():.4f}")
+                print(f"[INFO] Batch {batch_idx}/{num_batches}, Loss: {loss.item():.4f}")
                 self.print_memory_usage(f"Batch {batch_idx}")
         
         total_end_time = time.time()
         
-        print(f"🎯 Training completed in {total_end_time - total_start_time:.2f} seconds")
-        print(f"⚡ Average time per batch: {(total_end_time - total_start_time) / num_batches:.4f} seconds")
+        print(f"[INFO] Training completed in {total_end_time - total_start_time:.2f} seconds")
+        print(f"[INFO] Average time per batch: {(total_end_time - total_start_time) / num_batches:.4f} seconds")
         
         # Cleanup
         del model, data, target, output
@@ -204,7 +204,7 @@ class GPUTester:
                 return x
         
         model = ConvNet().to(self.device)
-        print(f"🖼️ Created ConvNet with {sum(p.numel() for p in model.parameters())} parameters")
+        print(f"[INFO] Created ConvNet with {sum(p.numel() for p in model.parameters())} parameters")
         self.print_memory_usage("After ConvNet creation")
         
         # Test with different image sizes
@@ -212,7 +212,7 @@ class GPUTester:
         batch_sizes = [32, 8]
         
         for (h, w), batch_size in zip(image_sizes, batch_sizes):
-            print(f"\n🔍 Testing with images of size {h}x{w}, batch size {batch_size}")
+            print(f"\n[INFO] Testing with images of size {h}x{w}, batch size {batch_size}")
             
             # Create random images
             images = torch.randn(batch_size, 3, h, w, device=self.device)
@@ -223,8 +223,8 @@ class GPUTester:
             torch.cuda.synchronize() if torch.cuda.is_available() else None
             end_time = time.time()
             
-            print(f"⚡ Forward pass time: {end_time - start_time:.4f} seconds")
-            print(f"🎯 Throughput: {batch_size / (end_time - start_time):.2f} images/second")
+            print(f"[INFO] Forward pass time: {end_time - start_time:.4f} seconds")
+            print(f"[INFO] Throughput: {batch_size / (end_time - start_time):.2f} images/second")
             self.print_memory_usage(f"After {h}x{w} forward pass")
             
             del images, output
@@ -241,10 +241,10 @@ class GPUTester:
         print("=" * 60)
         
         if not torch.cuda.is_available():
-            print("⚠️ Skipping memory stress test (CPU mode)")
+            print("[WARNING] Skipping memory stress test (CPU mode)")
             return
         
-        print("🔥 Starting memory stress test...")
+        print("[INFO] Starting memory stress test...")
         tensors = []
         
         try:
@@ -254,7 +254,7 @@ class GPUTester:
                 tensors.append(tensor)
                 
                 allocated, reserved = self.get_gpu_memory_usage()
-                print(f"📈 Allocated {len(tensors)} tensors, GPU Memory: {allocated:.2f}GB allocated, {reserved:.2f}GB reserved")
+                print(f"[INFO] Allocated {len(tensors)} tensors, GPU Memory: {allocated:.2f}GB allocated, {reserved:.2f}GB reserved")
                 
                 # Increase tensor size gradually
                 if len(tensors) % 10 == 0:
@@ -262,22 +262,22 @@ class GPUTester:
                 
                 # Break if we're using too much memory (safety check)
                 if allocated > self.gpu_memory * 0.9:
-                    print("🛑 Approaching memory limit, stopping stress test")
+                    print("[WARNING] Approaching memory limit, stopping stress test")
                     break
                     
         except RuntimeError as e:
             if "out of memory" in str(e):
-                print(f"💥 GPU out of memory after allocating {len(tensors)} tensors")
-                print(f"🎯 Maximum GPU memory usage: {self.get_gpu_memory_usage()[0]:.2f}GB")
+                print(f"[ERROR] GPU out of memory after allocating {len(tensors)} tensors")
+                print(f"[INFO] Maximum GPU memory usage: {self.get_gpu_memory_usage()[0]:.2f}GB")
             else:
-                print(f"❌ Error during stress test: {e}")
+                print(f"[ERROR] Error during stress test: {e}")
         
         # Cleanup
         del tensors
         torch.cuda.empty_cache()
         gc.collect()
         
-        print("🧹 Memory stress test cleanup completed")
+        print("[INFO] Memory stress test cleanup completed")
         self.print_memory_usage("After cleanup")
     
     def benchmark_operations(self):
@@ -304,7 +304,7 @@ class GPUTester:
         results = {}
         
         for op_name, op_func in operations.items():
-            print(f"\n🔬 Benchmarking: {op_name}")
+            print(f"\n[INFO] Benchmarking: {op_name}")
             
             # Warmup
             for _ in range(3):
@@ -327,11 +327,11 @@ class GPUTester:
             std_time = np.std(times)
             results[op_name] = (avg_time, std_time)
             
-            print(f"⏱️ Average time: {avg_time:.6f} ± {std_time:.6f} seconds")
+            print(f"[INFO] Average time: {avg_time:.6f} ± {std_time:.6f} seconds")
             
             torch.cuda.empty_cache() if torch.cuda.is_available() else None
         
-        print("\n📊 BENCHMARK SUMMARY:")
+        print("\n[INFO] BENCHMARK SUMMARY:")
         print("-" * 60)
         for op_name, (avg_time, std_time) in results.items():
             print(f"{op_name:<35}: {avg_time:.6f} ± {std_time:.6f} seconds")
@@ -347,7 +347,7 @@ class GPUTester:
         gpu_available = self.check_gpu_availability()
         
         if not gpu_available:
-            print("\n⚠️ Running tests on CPU (limited functionality)")
+            print("\n[WARNING] Running tests on CPU (limited functionality)")
         
         try:
             # Run all tests
@@ -361,32 +361,32 @@ class GPUTester:
             self.benchmark_operations()
             
         except Exception as e:
-            print(f"\n❌ Error during testing: {e}")
+            print(f"\n[ERROR] Error during testing: {e}")
             import traceback
             traceback.print_exc()
         
         end_time = time.time()
         
         print("\n" + "=" * 80)
-        print("🎉 GPU TEST SUITE COMPLETED")
+        print("[SUCCESS] GPU TEST SUITE COMPLETED")
         print("=" * 80)
-        print(f"⏱️ Total execution time: {end_time - start_time:.2f} seconds")
+        print(f"[INFO] Total execution time: {end_time - start_time:.2f} seconds")
         
         if torch.cuda.is_available():
-            print(f"🏁 Final GPU memory usage: {self.get_gpu_memory_usage()[0]:.2f}GB")
+            print(f"[INFO] Final GPU memory usage: {self.get_gpu_memory_usage()[0]:.2f}GB")
             torch.cuda.empty_cache()
         
-        print("✅ All tests completed successfully!")
+        print("[PASS] All tests completed successfully!")
 
 def main():
     """Main function to run GPU tests."""
-    print("🔥 PyTorch GPU Intensive Testing Script")
-    print("🎯 This script will test your GPU capabilities with intensive operations")
+    print("[INFO] PyTorch GPU Intensive Testing Script")
+    print("[INFO] This script will test your GPU capabilities with intensive operations")
     print()
     
     # Check Python and system info
-    print(f"🐍 Python version: {sys.version}")
-    print(f"💻 System: {psutil.virtual_memory().total / 1024**3:.2f}GB RAM")
+    print(f"[INFO] Python version: {sys.version}")
+    print(f"[INFO] System: {psutil.virtual_memory().total / 1024**3:.2f}GB RAM")
     print()
     
     # Create and run GPU tester

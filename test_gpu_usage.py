@@ -37,10 +37,10 @@ def test_gpu_usage():
     
     # Check CUDA availability
     if not torch.cuda.is_available():
-        print("❌ CUDA is not available. PyTorch cannot use GPU.")
+        print("[FAIL] CUDA is not available. PyTorch cannot use GPU.")
         return False
     
-    print(f"✓ CUDA is available")
+    print(f"[PASS] CUDA is available")
     print(f"✓ GPU: {torch.cuda.get_device_name(0)}")
     print(f"✓ Total GPU Memory: {torch.cuda.get_device_properties(0).total_memory / 1e9:.2f} GB")
     
@@ -103,11 +103,11 @@ def test_gpu_usage():
         if 'best_test_accuracy' in result:
             print(f"✓ Test Accuracy: {result['best_test_accuracy']:.2f}%")
         
-        print("\n✅ GPU usage test PASSED - GPU was used during training")
+        print("\n[PASS] GPU usage test PASSED - GPU was used during training")
         return True
         
     except Exception as e:
-        print(f"\n❌ GPU usage test FAILED: {e}")
+        print(f"\n[FAIL] GPU usage test FAILED: {e}")
         import traceback
         traceback.print_exc()
         return False

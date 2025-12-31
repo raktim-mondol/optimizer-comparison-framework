@@ -259,8 +259,8 @@ print(f"- Memory: {ultron_memory_rank}/{len(optimizers)}")
 print(f"- Speed: {ultron_speed_rank}/{len(optimizers)}")
 
 if ultron_memory_rank == 1 and ultron_speed_rank == 1:
-    print("\n✅ ULTRON achieves the goal: ultra computational inexpensive!")
+    print("\n[PASS] ULTRON achieves the goal: ultra computational inexpensive!")
 elif ultron_memory_rank <= 2 and ultron_speed_rank <= 2:
-    print("\n✅ ULTRON is highly computationally efficient!")
+    print("\n[PASS] ULTRON is highly computationally efficient!")
 else:
-    print("\n⚠️ ULTRON needs improvement in computational efficiency.")
+    print("\n[WARNING] ULTRON needs improvement in computational efficiency.")

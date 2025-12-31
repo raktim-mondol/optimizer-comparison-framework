@@ -26,11 +26,11 @@ def run_experiment(command, experiment_name=""):
     result = subprocess.run(command, shell=True, capture_output=True, text=True)
     
     if result.returncode != 0:
-        print(f"❌ Error running experiment: {experiment_name}")
+        print(f"[FAIL] Error running experiment: {experiment_name}")
         print(f"STDOUT:\n{result.stdout}")
         print(f"STDERR:\n{result.stderr}")
     else:
-        print(f"✅ Successfully completed: {experiment_name}")
+        print(f"[PASS] Successfully completed: {experiment_name}")
         # Show summary from output
         if "Best test accuracy:" in result.stdout:
             for line in result.stdout.split('\n'):
